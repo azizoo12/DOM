@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #cart {
+            width: 300px;
+            float: right;
+        }
+        #cart h2 {
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        #cart ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #cart li {
+            margin-bottom: 5px;
+        }
+        #total {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .product {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+        .quantity {
+            display: flex;
+            align-items: center;
+        }
+        .like-button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="cart">
+    <h2>Shopping Cart</h2>
+    <ul id="cart-items"></ul>
+    <div id="total">Total: $0.00</div>
+</div>
+
+<script>
+    const cartItems = [
+        { id: 1, name: "Product 1", price: 10.00, quantity: 1, liked: false },
+        { id: 2, name: "Product 2", price: 15.00, quantity: 1, liked: false },
+    ];
+
+    const cartContainer = document.getElementById("cart");
+    const cartItemsList = document.getElementById("cart-items");
+    const totalElement = document.getElementById("total");
+
+    function renderCart() {
+        cartItemsList.innerHTML = ""; // Clear previous items
+
+        let totalPrice = 0;
+
+        cartItems.forEach(item => {
+            const cartItem = document.createElement("li");
+            cartItem.classList.add("product");
+
+            const quantityContainer = document.createElement("div");
+            quantityContainer.classList.add("quantity");
+
+            const decreaseButton = document.createElement("button");
+            decreaseButton.textContent = "-";
+            decreaseButton.addEventListener("click", () => adjustQuantity(item.id, -1));
+
+            const quantityDisplay = document.createElement("span");
+            quantityDisplay.textContent = item.quantity;
+
+            const increaseButton = document.createElement("button");
+            increaseButton.textContent = "+";
+            increaseButton.addEventListener("click", () => adjustQuantity(item.id, 1));
+
+            quantityContainer.appendChild(decreaseButton);
+            quantityContainer.appendChild(quantityDisplay);
+            quantityContainer.appendChild(increaseButton);
+
+            const likeButton = document.createElement("span");
+            likeButton.classList.add("like-button");
+            likeButton.textContent = item.liked ? "❤️" : "🤍";
+            likeButton.addEventListener("click", () => toggleLike(item.id));
+
+            cartItem.innerHTML = `
+                <span>${item.name} - $${item.price.toFixed(2)}</span>
+            `;
+            cartItem.appendChild(quantityContainer);
+            cartItem.appendChild(likeButton);
+
+            // Update total price
+            totalPrice += item.price * item.quantity;
+
+            cartItemsList.appendChild(cartItem);
+        });
+
+        // Update total price display
+        totalElement.textContent = `Total: $${totalPrice.toFixed(2)}`;
+    }
+
+    function adjustQuantity(itemId, amount) {
+        const item = cartItems.find(i => i.id === itemId);
+
+        if (item) {
+            item.quantity += amount;
+
+            // Ensure quantity doesn't go below 1
+            if (item.quantity < 1) {
+                item.quantity = 1;
+            }
+
+            renderCart();
+        }
+    }
+
+    function toggleLike(itemId) {
+        const item = cartItems.find(i => i.id === itemId);
+
+        if (item) {
+            item.liked = !item.liked;
+            renderCart();
+        }
+    }
+
+    renderCart(); // Initial rendering
+</script>
+
+</body>
+</html>
